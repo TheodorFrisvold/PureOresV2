@@ -1,0 +1,11 @@
+name: Pureores
+version: 1.5
+main: me.favn.pureores.Pureores
+api-version: 1.18
+authors: [ Favn ]
+description: Adds rare versions of regular ore to the game
+commands:
+  givepure:
+    description: Command to give user pure ore
+    usage: /<command> <item> <amount>
+    aliases: gpo
