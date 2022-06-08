@@ -5,14 +5,8 @@ import me.favn.pureores.events.onBlockBreak;
 import me.favn.pureores.initials.BlockListGen;
 import me.favn.pureores.initials.Configuration;
 import me.favn.pureores.initials.ItemGenerator;
-import me.favn.pureores.sql.MySQL;
-import me.favn.pureores.sql.SQLGetter;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,11 +15,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 // error code PIGEON = issue in givepure class
-public final class Pureores extends JavaPlugin implements Listener {
+public final class Pureores extends JavaPlugin {
 
-    public static SQLGetter data;
-    public MySQL SQL;
-//    public SQLGetter data;
     public static Plugin plugin;
     public static List<Material> blocks = new ArrayList<>();
     public static Map<Material, String> blockidentifier = new HashMap<>();
@@ -48,18 +39,6 @@ public final class Pureores extends JavaPlugin implements Listener {
     public void onEnable() {
         // Plugin startup logic
         plugin = this;
-        this.SQL = new MySQL();
-        this.data = new SQLGetter(this);
-        try {
-            SQL.connect();
-        } catch (ClassNotFoundException | SQLException e) {
-            //e.printStackTrace();
-            getServer().getConsoleSender().sendMessage("§4Database is not connected!");
-        }
-        if (SQL.isConnected()) {
-            getServer().getConsoleSender().sendMessage("§2Database is connected!");
-            data.createTable();
-        }
         getServer().getConsoleSender().sendMessage("§2Plugin enabled KEKW");
         Configuration config = new Configuration(this, "config.yml");
         config.saveDefaultConfig();
@@ -74,7 +53,6 @@ public final class Pureores extends JavaPlugin implements Listener {
     public void onDisable() {
         // Plugin shutdown logic
         getServer().getConsoleSender().sendMessage("§2Plugin disabled KEKW");
-        SQL.disconnect();
     }
 }
 

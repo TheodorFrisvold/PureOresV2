@@ -1,8 +1,8 @@
 package me.favn.pureores.events;
 
 import me.favn.pureores.Pureores;
-import me.favn.pureores.sql.SQLGetter;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,8 +16,9 @@ public class onBlockBreak implements Listener {
     @EventHandler
     public static void onMineBlock(BlockBreakEvent e) {
         Material b = e.getBlock().getType();
+        boolean usingSilktouch = e.getPlayer().getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH);
 
-        if (Pureores.blocks.contains(b)) {
+        if (Pureores.blocks.contains(b) && !usingSilktouch) {
             onBreak(e);
         }
 
@@ -52,11 +53,6 @@ public class onBlockBreak implements Listener {
                     p.sendMessage("Found a rare " + name + "!");
                 }
 
-                //This shit works but now need to implement in a "onPlaceOre" class or something
-                Pureores.data.createPlayer(p);
-                p.sendMessage("create player worked");
-                Pureores.data.addPoints(p.getUniqueId(), 1);
-                p.sendMessage("adding points worked");
 
             }
         }
