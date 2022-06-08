@@ -56,14 +56,10 @@ public final class Pureores extends JavaPlugin {
     }
 }
 
-// TODO: Check if block broken is naturally generated
-// TODO: Add alternative text to chat messages & any static text whatsoever.
+// TODO: Check if block broken is naturally generated - USE COREPROTECT FOR THIS
 // Resource world: Disallow placing oreblocks
 // Settlement world: No plugin or use 0% droprate
-// TODO: Save placed ore-blocks in arrays, separated into chunks for more lightweight searches.
+// TODO: Add alternative text to chat messages & any static text whatsoever.
 // TODO: Add checks if syntax in config is fucked so the plugin doesn't FUCKING CRASH
 // TODO: Move from Int to Double to allow for decimals
 // TODO: Make API
-// TODO: in givepure, pass amount value as well when sending invalid syntax, if amount value is null run original invalidsyntax, else run new invalidsyntax part adding if number is 0 or negative
-// TODO: in givepure, if player sends name as amount value, send invalidsyntax with message regarding not using text for amount
-// TODO: Properly implement database for placed oreblocks, check comment: onBlockBreak.java:55

@@ -1,6 +1,7 @@
 package me.favn.pureores.commands;
 
 import me.favn.pureores.Pureores;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,8 +20,8 @@ public class givepure implements TabExecutor {
             sender.sendMessage("Only players can use that command");
             return true;
         }
+        int amount = -1;
         Player player = (Player) sender;
-
         if (cmd.getName().equalsIgnoreCase("givepure")) {
             if (args.length == 1) {
                 ItemStack item = Objects.requireNonNull(Pureores.items.get(Pureores.NameAndItemname.get(args[0].toUpperCase())), "Key(itemname) cannot be null");
@@ -29,7 +30,11 @@ public class givepure implements TabExecutor {
             } else if (args.length == 2) {
                 try {
                     ItemStack item = Objects.requireNonNull(Pureores.items.get(Pureores.NameAndItemname.get(args[0].toUpperCase())), "Key(itemname) cannot be null");
-                    int amount = Integer.parseInt(args[1]);
+                    try {
+                        amount = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException e){
+                        Bukkit.getConsoleSender().sendMessage("§cNumber format exception when using command /givepure, user input string instead of number");
+                    }
                     if (amount == 0) {
                         player.sendMessage("Amount cannot be 0!");
                     } else if (amount >= 1) {
@@ -64,6 +69,5 @@ public class givepure implements TabExecutor {
     public void InvalidSyntax(Player player) {
         player.sendMessage("Invalid command syntax, use: /givepure <item> <amount>");
         player.sendMessage("Example: /givepure Diamond 10");
-
     }
 }
