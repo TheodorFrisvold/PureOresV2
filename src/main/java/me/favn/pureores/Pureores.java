@@ -57,7 +57,4 @@ public final class Pureores extends JavaPlugin {
     }
 }
 
-// TODO: Add alternative text to chat messages & any static text whatsoever.
-// TODO: Add checks if syntax in config is incorrect so the plugin doesn't crash 
-// TODO: Move from Int to Double to allow for decimals in config
 // Make API (Consider if needed, removed "TODO" for now) 
