@@ -57,10 +57,7 @@ public final class Pureores extends JavaPlugin {
     }
 }
 
-// TODO: Check if block broken is naturally generated - USE COREPROTECT FOR THIS
-// Resource world: Disallow placing oreblocks
-// Settlement world: No plugin or use 0% droprate
 // TODO: Add alternative text to chat messages & any static text whatsoever.
-// TODO: Add checks if syntax in config is fucked so the plugin doesn't FUCKING CRASH
-// TODO: Move from Int to Double to allow for decimals
-// TODO: Make API
+// TODO: Add checks if syntax in config is incorrect so the plugin doesn't crash 
+// TODO: Move from Int to Double to allow for decimals in config
+// Make API (Consider if needed, removed "TODO" for now) 
