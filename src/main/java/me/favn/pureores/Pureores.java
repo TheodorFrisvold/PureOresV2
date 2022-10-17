@@ -1,17 +1,15 @@
 package me.favn.pureores;
 
-import me.favn.pureores.commands.givepure;
+import me.favn.pureores.commands.GivePure;
 import me.favn.pureores.events.onBlockBreak;
 import me.favn.pureores.initials.BlockListGen;
 import me.favn.pureores.initials.Configuration;
 import me.favn.pureores.initials.ItemGenerator;
 import org.bukkit.Material;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.SQLException;
 import java.util.*;
 
 // error code PIGEON = issue in givepure class
@@ -42,7 +40,10 @@ public final class Pureores extends JavaPlugin {
         getServer().getConsoleSender().sendMessage("§2Plugin enabled KEKW");
         Configuration config = new Configuration(this, "config.yml");
         config.saveDefaultConfig();
-        getCommand("givepure").setExecutor(new givepure());
+        
+        // Initialize givepure command
+        new GivePure(this);
+
         new ItemGenerator(plugin);
         new BlockListGen(this);
         getServer().getPluginManager().registerEvents(new onBlockBreak(), this);
