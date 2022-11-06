@@ -1,6 +1,10 @@
 package me.favn.pureores.commands;
 
 import me.favn.pureores.Pureores;
+import me.favn.pureores.config.OresConfig.Ore;
+import me.favn.pureores.utils.ItemFactory;
+import me.favn.pureores.utils.PureGiver;
+
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -49,13 +53,27 @@ public class GivePure implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             // /givepure <ITEM>
-            return Pureores.names;
+            return this.plugin
+                .getConfigManager()
+                .getOresConfig()
+                .getOres()
+                .stream()
+                .map(ore ->
+                    ore.hasAlias()
+                        ? ore.getAlias()
+                        : ore.getItem().toString().toLowerCase()
+                )
+                .collect(Collectors.toList());
         }
         if (args.length == 2 || args.length == 3) {
             // /givepure <item> [PLAYER]
             // /givepure <item> [amount] [PLAYER]
-            return plugin.getServer().getOnlinePlayers()
-                .stream().map(pl -> pl.getName()).collect(Collectors.toList());
+            return plugin
+                .getServer()
+                .getOnlinePlayers()
+                .stream()
+                .map(pl -> pl.getName())
+                .collect(Collectors.toList());
         }
         return null;
     }
@@ -83,9 +101,11 @@ public class GivePure implements TabExecutor {
         if (sender instanceof ConsoleCommandSender && playerName == null) {
             throw new GivePureException("Console cannot be given pure ores. Please specify a player.");
         }
-        String foundItemName = Pureores.NameAndItemname.get(itemName.toUpperCase());
-        ItemStack item = Pureores.items.get(foundItemName);
-        if (item == null) {
+        Ore foundOre = this.plugin
+            .getConfigManager()
+            .getOresConfig()
+            .getOreByItem(itemName);
+        if (foundOre == null) {
             throw new GivePureException(String.format("%1$s is not a valid pureores item.", itemName));
         }
         int parsedAmount = parseAmount(amount);
@@ -96,11 +116,10 @@ public class GivePure implements TabExecutor {
         if (player == null) {
             throw new GivePureException(String.format("No player found with name %1$s.", playerName));
         }
-        item.setAmount(parsedAmount);
-        player.getInventory().addItem(item);
-        player.sendMessage(String.format("Added %1$d %2$s to your inventory!", parsedAmount, foundItemName));
+        ItemStack item = ItemFactory.getItem(foundOre, parsedAmount);
+        PureGiver.givePure(player, item, false);
         if (playerName != null) {
-            sender.sendMessage(String.format("Gave %1$d %2$s to %3$s!", parsedAmount, foundItemName, player.getDisplayName()));
+            sender.sendMessage(String.format("Gave %1$d %2$s to %3$s!", parsedAmount, foundOre.getName(), player.getDisplayName()));
         }
     }
 

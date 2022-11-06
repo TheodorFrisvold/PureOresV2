@@ -25,13 +25,18 @@ public class ConfigManager {
                 .inputNulls(true)
                 .build();
         this.oresFile = new File(this.plugin.getDataFolder(), ORES_CONFIG_NAME).toPath();
+        this.loadOresConfig();
+    }
+
+    private void loadOresConfig() {
+        this.oresConfig = YamlConfigurations.update(this.oresFile, OresConfig.class, this.oresProperties);
+        boolean valid = this.oresConfig.validate(this.plugin.getLogger());
+        this.plugin.getLogger().info("Loaded ores config from " + ORES_CONFIG_NAME + ". Config is " + (valid ? "valid." : "invalid."));
     }
 
     public OresConfig getOresConfig() {
         if (this.oresConfig == null) {
-            this.oresConfig = YamlConfigurations.update(this.oresFile, OresConfig.class, this.oresProperties);
-            boolean valid = this.oresConfig.validate();
-            this.plugin.getLogger().info("Loaded ores config from " + ORES_CONFIG_NAME + ". Config is " + (valid ? "valid." : "invalid."));
+            this.loadOresConfig();
         }
         return this.oresConfig;
     }
