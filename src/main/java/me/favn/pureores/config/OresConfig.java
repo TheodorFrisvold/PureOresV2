@@ -3,302 +3,315 @@ package me.favn.pureores.config;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import de.exlll.configlib.Comment;
-import de.exlll.configlib.Configuration;
-import de.exlll.configlib.Serializer;
-import de.exlll.configlib.SerializeWith;
+import me.favn.pureores.Pureores;
 
-@Configuration
-public final class OresConfig {
-    static final Double DEFAULT_DROP_CHANCE = 0.5;
+public class OresConfig {
+    private static OresConfig instance;
 
-    static final class BlockMaterialSerializer implements Serializer<Set<Material>, String> {
-        @Override
-        public Set<Material> deserialize(String str) {
-            Set<Material> result = new HashSet<>();
-            for (String oreName : str.split(",")) {
-                oreName = oreName.trim();
-                Material ore = Material.getMaterial(oreName.toUpperCase());
-                result.add(ore);
-            }
-            return result;
+    /**
+     * Gets the current ores config object.
+     *
+     * @param plugin A {@link Pureores} instance.
+     * @param reload Whether to reload the config. Use {@code true} when the plugin
+     *               has been reloaded.
+     * @return The {@link OresConfig} singleton instance.
+     */
+    public static OresConfig getConfig(Pureores plugin, boolean reload) {
+        if (instance == null || reload) {
+            instance = new OresConfig(plugin);
         }
-
-        @Override
-        public String serialize(Set<Material> ores) {
-            // Serialize materials as a comma-separated list
-            return ores.stream().map(ore -> ore.toString()).collect(Collectors.joining(", "));
-        }
+        return instance;
     }
 
-    static final class MaterialSerializer implements Serializer<Material, String> {
-        @Override
-        public Material deserialize(String str) {
-            return Material.getMaterial(str.trim().toUpperCase());
-        }
-
-        @Override
-        public String serialize(Material item) {
-            return item.toString();
-        }
+    /**
+     * Gets the current ores config object.
+     *
+     * @param plugin A {@link Pureores} instance.
+     * @return The {@link OresConfig} singleton instance.
+     */
+    public static OresConfig getConfig(Pureores plugin) {
+        return getConfig(plugin, false);
     }
 
-    static final class DropChanceSerializer implements Serializer<Double, Object> {
-        @Override
-        public Double deserialize(Object obj) {
-            try {
-                return Double.parseDouble(obj.toString());
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
+    private final Pureores plugin;
 
-        @Override
-        public Double serialize(Double chance) {
-            return chance;
-        }
+    private OresConfig(Pureores plugin) {
+        this.plugin = plugin;
+
+        this.plugin.saveDefaultConfig();
+        this.memoizedOres = new HashMap<>();
     }
 
-    @Configuration
-    public static final class Ore {
-        private String name;
-        private String formatting;
-        @SerializeWith(serializer = MaterialSerializer.class)
-        private Material item;
-        @SerializeWith(serializer = BlockMaterialSerializer.class)
-        private Set<Material> blocks;
-        @SerializeWith(serializer = DropChanceSerializer.class)
-        private Double chance;
-        private String description;
-        private String alias;
-
-        public Ore(String name, String formatting, Material item, Set<Material> blocks, double chance, String description, String alias) {
-            this.name = name;
-            this.formatting = formatting;
-            this.item = item;
-            this.blocks = blocks;
-            this.chance = chance;
-            this.description = description;
-            this.alias = alias;
-        }
-
-        public Ore(String name, String formatting, Material item, Material blocks, double chance, String description, String alias) {
-            this.name = name;
-            this.formatting = formatting;
-            this.item = item;
-            this.blocks = new HashSet<>(Arrays.asList(blocks));
-            this.chance = chance;
-            this.description = description;
-            this.alias = alias;
-        }
-
-        private Ore() {
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getFormatting() {
-            return formatting.replace("&", "§");
-        }
-
-        public Material getItem() {
-            return item;
-        }
-
-        public Set<Material> getBlocks() {
-            return Collections.unmodifiableSet(blocks);
-        }
-
-        public Double getChance() {
-            return chance;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getAlias() {
-            return alias.trim().replaceAll("\\s", "").toLowerCase();
-        }
-
-        public boolean hasAlias() {
-            return getAlias() != null && !getAlias().isEmpty();
-        }
+    private void warn(String message) {
+        this.plugin.getLogger().warning("CONFIG ERROR: " + message);
     }
 
-    private OresConfig() {
-    }
-
-    @Comment({
-        "The list of pure ores and their options. Each item should have the following properties:",
-        "  name: What the item name will be in-game. You cannot include color codes here",
-        "  formatting: The color/formatting codes to use with the item name above (use '&' or '§')",
-        "  item: The material for the dropped item",
-        "  blocks: A comma-separated list of materials for blocks to drop the item from",
-        "  chance: The drop chance as a decimal (e.g. 0.5 for 50% or 0.005 for 0.5%)",
-        "  description: Text to display in the item's lore",
-        "  alias: An optional alias to use with the /givepure command, instead of the item material",
-        " ",
-        "Example item:",
-        "  - name: Flawless Diamond",
-        "    formatting: §b",
-        "    item: DIAMOND",
-        "    blocks: DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE",
-        "    chance: 0.5",
-        "    description: A rare form of Diamond!",
-        "    alias: diamond",
-        " ",
-        "Guide for color codes: https://minecraft.fandom.com/wiki/Formatting_codes",
-        "List of valid materials: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html"
-    })
-    private List<Ore> ores = new ArrayList<>(Arrays.asList(
-    new Ore("Flawless Diamond", "§b", Material.DIAMOND,
-    new HashSet<>(Arrays.asList(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE)), DEFAULT_DROP_CHANCE,
-    "A rare form of Diamond!", "diamond"),
-    new Ore("Flawless Emerald", "§2", Material.EMERALD,
-    new HashSet<>(Arrays.asList(Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE)), DEFAULT_DROP_CHANCE,
-    "A rare form of Emerald!", "emerald"),
-    new Ore("Pure Gold", "§e", Material.GOLD_INGOT,
-    new HashSet<>(Arrays.asList(Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE)), DEFAULT_DROP_CHANCE, "A rare form of Gold!", "gold"),
-    new Ore("Pure Iron", "§f", Material.IRON_INGOT,
-    new HashSet<>(Arrays.asList(Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE)), DEFAULT_DROP_CHANCE, "A rare form of Iron!", "iron"),
-    new Ore("Pure Redstone", "§c", Material.REDSTONE,
-    new HashSet<>(Arrays.asList(Material.REDSTONE_ORE, Material.DEEPSLATE_REDSTONE_ORE)), DEFAULT_DROP_CHANCE,
-    "A rare form of Redstone!", "redstone"),
-    new Ore("Pure Copper", "§6", Material.COPPER_INGOT,
-    new HashSet<>(Arrays.asList(Material.COPPER_ORE, Material.DEEPSLATE_COPPER_ORE)), DEFAULT_DROP_CHANCE,
-    "A rare form of Copper!", "copper"),
-    new Ore("Pure Coal", "§8", Material.COAL,
-    new HashSet<>(Arrays.asList(Material.COAL_ORE, Material.DEEPSLATE_COAL_ORE)), DEFAULT_DROP_CHANCE, "A rare form of Coal!", "coal"),
-    new Ore("Flawless Lapis", "§9", Material.LAPIS_LAZULI,
-    new HashSet<>(Arrays.asList(Material.LAPIS_ORE, Material.DEEPSLATE_LAPIS_ORE)), DEFAULT_DROP_CHANCE, "A rare form of Lapis!", "lapis"),
-    new Ore("Flawless Amethyst Shard", "§d", Material.AMETHYST_SHARD, Material.AMETHYST_CLUSTER, DEFAULT_DROP_CHANCE,
-    "A rare form of Amethyst!", "amethyst")));
-
-    @Comment({ "", "The value to use if an item does not have a drop chance" })
-    @SerializeWith(serializer = DropChanceSerializer.class)
-    private Double globalDropChance = DEFAULT_DROP_CHANCE;
-    @Comment("Whether all items should use the global drop chance instead of their own drop chance")
-    private boolean globalDropChanceOverride = false;
-
-    public List<Ore> getOres() {
-        return Collections.unmodifiableList(ores);
-    }
-
-    public Double getGlobalDropChance() {
-        return globalDropChance;
-    }
-
-    public boolean isGlobalDropChanceOverride() {
-        return globalDropChanceOverride;
-    }
-
-    public boolean validate(Logger logger) {
-        int errors = 0;
-        if (this.getGlobalDropChance() == null) {
-            logger.warning("Error in ores config: Missing global drop chance, setting to default of " + DEFAULT_DROP_CHANCE);
-            errors++;
-            this.globalDropChance = DEFAULT_DROP_CHANCE;
+    /**
+     * The global drop chance setting.
+     * This value is used when an {@link Ore} doesn't have a drop chance,
+     * or {@link OresConfig#useGlobalDropChance()} returns {@code true}.
+     *
+     * @return
+     */
+    public double getGlobalDropChance() {
+        double chance = this.plugin.getConfig().getDouble("globals.chance.value");
+        if (chance == 0) {
+            this.warn("Missing global drop chance, using 0%");
         }
-        if (this.getOres() != null & this.getOres().size() > 0) {
-            List<Ore> toRemove = new ArrayList<>();
-            Set<String> aliases = new HashSet<>();
-            for (Ore ore : this.getOres()) {
-                if (ore.getName() == null || ore.getName().isEmpty()) {
-                    logger.warning("Error in ores config: Missing pure item name, removing from list");
-                    toRemove.add(ore);
-                    errors++;
-                    continue;
-                }
-                if (ore.getItem() == null) {
-                    logger.warning("Error in ores config: Invalid item material for " + ore.getName() + ", removing from list");
-                    toRemove.add(ore);
-                    errors++;
-                    continue;
-                }
-                for (Material block : ore.getBlocks()) {
-                    if (block != null && !block.isBlock()) {
-                        logger.warning("Error in ores config: Block material " + block.toString() + " for " + ore.getName() + " is not a block");
-                        errors++;
-                    } else if (block == null) {
-                        logger.warning("Error in ores config: Invalid block material(s) for " + ore.getName());
-                        errors++;
-                    }
-                }
-                // Remove invalid block materials
-                ore.blocks.removeIf(m -> m == null || !m.isBlock());
-                if (ore.getBlocks() == null || ore.getBlocks().size() == 0) {
-                    logger.warning("Error in ores config: No valid block materials for " + ore.getName() + ", removing from list");
-                    toRemove.add(ore);
-                    errors++;
-                    continue;
-                }
-                if (ore.getChance() != null) {
-                    if (ore.getChance() < 0) {
-                        logger.warning("Error in ores config: Chance for " + ore.getName() + " cannot be negative");
-                        ore.chance = 0.0;
-                        errors++;
-                    } else if (ore.getChance() > 1) {
-                        logger.warning("Error in ores config: Chance for " + ore.getName() + " cannot be >1");
-                        ore.chance = 1.0;
-                        errors++;
-                    }
-                }
-                if (ore.getFormatting() == null || !ore.getFormatting().matches("^((&|§)[0-9a-fklmnor])*$")) {
-                    logger.warning("Error in ores config: Invalid formatting for " + ore.getName() + ", removing formatting");
-                    ore.formatting = "";
-                    errors++;
-                }
-                if (ore.hasAlias()) {
-                    if (aliases.contains(ore.getAlias())) {
-                        logger.warning("Error in ores config: Duplicate item alias " + ore.getAlias() + ", removing alias from " + ore.getName());
-                        ore.alias = "";
-                        errors++;
-                    }
-                    aliases.add(ore.getAlias());
-                }
-            }
-            for (Ore ore : toRemove) {
-                this.ores.remove(ore);
+        return chance;
+    }
+
+    /**
+     * Whether all pure ores should use the global drop chance.
+     */
+    public boolean useGlobalDropChance() {
+        return this.plugin.getConfig().getBoolean("globals.chance.use", false);
+    }
+
+    /**
+     * A map of aliases and {@link Ore}s.
+     * The keys of this map are memoized values returned from
+     * {@link OresConfig#getOre(String)}.
+     */
+    private Map<String, Ore> memoizedOres;
+
+    /**
+     * Gets a pure ore object by its alias and validates all its properties.
+     * If there are any validation errors, they are logged, and {@code null} is
+     * returned.
+     *
+     * @param alias The alias to get the ore by.
+     * @return An {@link Ore} if {@code alias} and its ore are valid, otherwise
+     *         {@code null}.
+     */
+    public Ore getOre(String alias) {
+        if (alias == null) {
+            return null;
+        }
+        // Memoize results so we don't have to hit the config and validte
+        // twice for the same alias
+        Ore foundOre = this.memoizedOres.get(alias.trim().toLowerCase());
+        if (foundOre != null) {
+            return foundOre;
+        }
+
+        ConfigurationSection section = this.plugin.getConfig().getConfigurationSection("ores." + alias.trim());
+        if (section == null) {
+            this.warn("Missing ore section for " + alias);
+            return null;
+        }
+        String name = section.getString("name", "");
+        if (name.isEmpty()) {
+            this.warn("Missing display name for " + alias);
+            return null;
+        }
+        String formatting = section.getString("formatting");
+        Material item = Material.getMaterial(section.getString("item", ""));
+        if (item == null) {
+            this.warn("Missing/invalid item material for " + alias);
+            return null;
+        }
+        Set<Material> blocks = new HashSet<Material>();
+        List<String> blockNames = section.getStringList("blocks");
+        for (String blockName : blockNames) {
+            Material block = Material.getMaterial(blockName.trim().toUpperCase());
+            if (block != null && block.isBlock()) {
+                blocks.add(block);
+            } else {
+                this.warn("Block material for " + alias + " is not a block (" + blockName + ")");
             }
         }
-        if (errors > 0) {
-            logger.warning("There are " + errors + " errors in your ores config. Please update your config using the log messages above.");
-        }
-        return errors == 0;
-    }
-
-    public Ore getOreByItem(Material item) {
-        return this.getOreByItem(item.toString());
-    }
-    public Ore getOreByItem(String item) {
-        for (Ore ore : this.getOres()) {
-            if (item.equalsIgnoreCase(ore.getItem().toString())) {
-                return ore;
+        if (blocks.isEmpty()) {
+            // Try to get a single block material
+            String blockName = section.getString("blocks");
+            if (blockName != null) {
+                Material block = Material.getMaterial(blockName.trim().toUpperCase());
+                if (block != null && block.isBlock()) {
+                    blocks.add(block);
+                } else {
+                    this.warn("Block material for " + alias + " is not a block (" + blockName + ")");
+                }
             }
         }
-        return null;
+        if (blocks.isEmpty()) {
+            this.warn("No valid block materials for " + alias);
+            return null;
+        }
+        Double chance = section.getDouble("chance", getGlobalDropChance());
+        String description = section.getString("description");
+
+        Ore ore = new Ore(alias, name, formatting, item, blocks, chance, description);
+        this.memoizedOres.put(alias.trim().toLowerCase(), ore);
+        return ore;
     }
 
-    public Ore getOreByBlock(String block) {
-        return this.getOreByBlock(Material.valueOf(block.toUpperCase()));
-    }
-    public Ore getOreByBlock(Material block) {
+    /**
+     * Gets a pure ore object that drops from {@code block}, if there is one.
+     *
+     * @param block The block material to look for pure ore drops from.
+     * @return An {@link Ore} if there are any that are valid and drop from
+     *         {@code block}, otherwise {@code null}.
+     */
+    public Ore getOre(Material block) {
         for (Ore ore : this.getOres()) {
             if (ore.getBlocks().contains(block)) {
                 return ore;
             }
         }
         return null;
+    }
+
+    /**
+     * Gets a list of all valid pure ore objects.
+     *
+     * @return A list of {@link Ore}s.
+     */
+    public List<Ore> getOres() {
+        List<Ore> ores = new ArrayList<>();
+        if (!this.plugin.getConfig().contains("ores")) {
+            this.warn("Missing ores section");
+            return ores;
+        }
+        Set<String> aliases = this.plugin.getConfig().getConfigurationSection("ores").getKeys(false);
+        for (String alias : aliases) {
+            Ore ore = this.getOre(alias);
+            if (ore != null) {
+                ores.add(ore);
+            }
+        }
+        return ores;
+    }
+
+    public final class Ore {
+        protected Ore(String alias, String name, String formatting, Material item, Set<Material> blocks, Double chance,
+                String description) {
+            this.alias = alias;
+            this.name = name;
+            this.formatting = formatting;
+            this.item = item;
+            this.blocks = blocks;
+            this.chance = chance;
+            this.description = description;
+        }
+
+        private String alias;
+        private String name;
+        private String formatting;
+        private Material item;
+        private Set<Material> blocks;
+        private Double chance;
+        private String description;
+
+        /**
+         * Gets the alias to use with the /givepure command.
+         */
+        public String getAlias() {
+            return alias;
+        }
+
+        /**
+         * Gets the name of the pure item without formatting.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Gets the formatting and color codes to use with the pure item's name.
+         */
+        public String getFormatting() {
+            if (formatting == null) {
+                return "";
+            }
+            return formatting.trim().replaceAll("&", "§");
+        }
+
+        /**
+         * Gets the material that is dropped as a pure item.
+         */
+        public Material getItem() {
+            return item;
+        }
+
+        /**
+         * Gets block materials that drop a pure item.
+         */
+        public Set<Material> getBlocks() {
+            return Collections.unmodifiableSet(blocks);
+        }
+
+        /**
+         * Gets the drop chance for this pure ore.
+         * The global drop chance is returned if
+         * {@link OresConfig#useGlobalDropChance()} returns true,
+         * or if this ore doesn't have a drop chance.
+         */
+        public Double getChance() {
+            if (chance == null || useGlobalDropChance()) {
+                return getGlobalDropChance();
+            }
+            return chance;
+        }
+
+        /**
+         * Gets the lore text for the dropped pure item.
+         */
+        public String getDescription() {
+            if (description == null) {
+                return "";
+            }
+            return description;
+        }
+
+        /**
+         * Get the item dropped by a pure ore.
+         *
+         * @param amount The amount of items in the returned item stack.
+         */
+        public ItemStack toItemStack(int amount) {
+            if (amount <= 0) {
+                return null;
+            }
+            ItemStack item = new ItemStack(getItem(), amount);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(ChatColor.RESET + getFormatting() + getName());
+            if (!getDescription().isEmpty()) {
+                meta.setLore(Arrays.asList(ChatColor.RESET + getDescription()));
+            }
+            meta.addEnchant(Enchantment.LUCK, 1, false);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
+
+            return item;
+        }
+
+        /**
+         * Get the item dropped by a pure ore, with one item in the returned item stack.
+         */
+        public ItemStack toItemStack() {
+            return this.toItemStack(1);
+        }
+
+        /**
+         * Gets the display name of the dropped pure item, with any formatting.
+         */
+        @Override
+        public String toString() {
+            return ChatColor.RESET + getFormatting() + getName();
+        }
     }
 }

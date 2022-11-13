@@ -11,9 +11,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import me.favn.pureores.Pureores;
+import me.favn.pureores.config.OresConfig;
 import me.favn.pureores.config.OresConfig.Ore;
-import me.favn.pureores.utils.ItemFactory;
-import me.favn.pureores.utils.PureGiver;
 
 public class BlockBreakHandler implements Listener {
     private final Pureores plugin;
@@ -28,28 +27,15 @@ public class BlockBreakHandler implements Listener {
         Material block = e.getBlock().getType();
         Player player = e.getPlayer();
         boolean silkTouch = player.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH);
-        Ore ore = this.plugin
-            .getConfigManager()
-            .getOresConfig()
-            .getOreByBlock(block);
+        Ore ore = OresConfig.getConfig(this.plugin).getOre(block);
 
         if (!silkTouch && ore != null) {
-            boolean useGlobalChance = this.plugin
-                .getConfigManager()
-                .getOresConfig()
-                .isGlobalDropChanceOverride();
             Random random = new Random();
-            Double chance = ore.getChance();
-            if (chance == null || useGlobalChance) {
-                chance = this.plugin
-                    .getConfigManager()
-                    .getOresConfig()
-                    .getGlobalDropChance();
-            }
+            double chance = ore.getChance();
             if (random.nextDouble() <= chance) {
-                ItemStack item = ItemFactory.getItem(ore);
+                ItemStack item = ore.toItemStack();
                 e.setDropItems(false);
-                PureGiver.givePure(player, item, true);
+                this.plugin.givePure(player, item, true);
             }
         }
     }
