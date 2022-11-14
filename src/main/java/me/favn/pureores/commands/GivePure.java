@@ -1,7 +1,6 @@
 package me.favn.pureores.commands;
 
 import me.favn.pureores.Pureores;
-import me.favn.pureores.config.OresConfig;
 import me.favn.pureores.config.OresConfig.Ore;
 
 import org.bukkit.command.*;
@@ -52,8 +51,8 @@ public class GivePure implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             // /givepure <ITEM>
-            return OresConfig
-                    .getConfig(this.plugin)
+            return this.plugin
+                    .getOresConfig()
                     .getOres()
                     .stream()
                     .map(o -> o.getAlias())
@@ -96,7 +95,7 @@ public class GivePure implements TabExecutor {
         if (sender instanceof ConsoleCommandSender && playerName == null) {
             throw new GivePureException("Console cannot be given pure ores. Please specify a player.");
         }
-        Ore foundOre = OresConfig.getConfig(this.plugin).getOre(itemName);
+        Ore foundOre = this.plugin.getOresConfig().getOre(itemName);
         if (foundOre == null) {
             throw new GivePureException(String.format("%1$s is not a valid pureores item.", itemName));
         }

@@ -9,6 +9,7 @@ import me.favn.pureores.config.OresConfig;
 import me.favn.pureores.events.BlockBreakHandler;
 
 public final class Pureores extends JavaPlugin {
+    private OresConfig oresConfig;
 
     @Override
     public void onEnable() {
@@ -16,8 +17,7 @@ public final class Pureores extends JavaPlugin {
         getServer().getConsoleSender().sendMessage("§2Plugin enabled KEKW");
 
         // Initialize ores config
-        // reset=true, so the config will be reloaded when the plugin is reloaded
-        OresConfig.getConfig(this, true);
+        this.oresConfig = new OresConfig(this);
 
         // Initialize givepure command
         new GivePure(this);
@@ -32,6 +32,16 @@ public final class Pureores extends JavaPlugin {
         getServer().getConsoleSender().sendMessage("§2Plugin disabled KEKW");
     }
 
+    public OresConfig getOresConfig() {
+        return this.oresConfig;
+    }
+
+    /**
+     * A utility method for giving pure ore drops to players.
+     * @param player The player to give the pure item to.
+     * @param item The item stack to give the player.
+     * @param natural Whether the item was dropped from ore, instead of given with a command.
+     */
     public void givePure(Player player, ItemStack item, boolean natural) {
         if (player == null || item == null) {
             return;
@@ -51,6 +61,12 @@ public final class Pureores extends JavaPlugin {
         }
     }
 
+    /**
+     * A utility method for giving pure ore drops to players.
+     * This method assumes the pure item was dropped from ore, instead of given with a command.
+     * @param player The player to give the pure item to.
+     * @param item The item stack to give the player.
+     */
     public void givePure(Player player, ItemStack item) {
         givePure(player, item, true);
     }

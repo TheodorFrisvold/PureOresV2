@@ -11,7 +11,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import me.favn.pureores.Pureores;
-import me.favn.pureores.config.OresConfig;
 import me.favn.pureores.config.OresConfig.Ore;
 
 public class BlockBreakHandler implements Listener {
@@ -27,7 +26,7 @@ public class BlockBreakHandler implements Listener {
         Material block = e.getBlock().getType();
         Player player = e.getPlayer();
         boolean silkTouch = player.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH);
-        Ore ore = OresConfig.getConfig(this.plugin).getOre(block);
+        Ore ore = this.plugin.getOresConfig().getOre(block);
 
         if (!silkTouch && ore != null) {
             Random random = new Random();

@@ -1,5 +1,6 @@
 package me.favn.pureores.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,8 @@ import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -19,45 +22,28 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.favn.pureores.Pureores;
 
-public class OresConfig {
-    private static OresConfig instance;
-
-    /**
-     * Gets the current ores config object.
-     *
-     * @param plugin A {@link Pureores} instance.
-     * @param reload Whether to reload the config. Use {@code true} when the plugin
-     *               has been reloaded.
-     * @return The {@link OresConfig} singleton instance.
-     */
-    public static OresConfig getConfig(Pureores plugin, boolean reload) {
-        if (instance == null || reload) {
-            instance = new OresConfig(plugin);
-        }
-        return instance;
-    }
-
-    /**
-     * Gets the current ores config object.
-     *
-     * @param plugin A {@link Pureores} instance.
-     * @return The {@link OresConfig} singleton instance.
-     */
-    public static OresConfig getConfig(Pureores plugin) {
-        return getConfig(plugin, false);
-    }
+public final class OresConfig {
+    private static final String CONFIG_FILE_NAME = "ores.yml";
 
     private final Pureores plugin;
+    private FileConfiguration config;
 
-    private OresConfig(Pureores plugin) {
+    public OresConfig(Pureores plugin) {
         this.plugin = plugin;
 
-        this.plugin.saveDefaultConfig();
+        this.reload();
+
         this.memoizedOres = new HashMap<>();
     }
 
-    private void warn(String message) {
-        this.plugin.getLogger().warning("CONFIG ERROR: " + message);
+    public void reload() {
+        File configFile = new File(plugin.getDataFolder(), CONFIG_FILE_NAME);
+        if (!configFile.exists()) {
+            configFile.getParentFile().mkdirs();
+            plugin.saveResource(CONFIG_FILE_NAME, false);
+        }
+
+        this.config = YamlConfiguration.loadConfiguration(configFile);
     }
 
     /**
@@ -68,7 +54,7 @@ public class OresConfig {
      * @return
      */
     public double getGlobalDropChance() {
-        double chance = this.plugin.getConfig().getDouble("globals.chance.value");
+        double chance = this.config.getDouble("globals.chance.value");
         if (chance == 0) {
             this.warn("Missing global drop chance, using 0%");
         }
@@ -79,7 +65,7 @@ public class OresConfig {
      * Whether all pure ores should use the global drop chance.
      */
     public boolean useGlobalDropChance() {
-        return this.plugin.getConfig().getBoolean("globals.chance.use", false);
+        return this.config.getBoolean("globals.chance.use", false);
     }
 
     /**
@@ -109,7 +95,7 @@ public class OresConfig {
             return foundOre;
         }
 
-        ConfigurationSection section = this.plugin.getConfig().getConfigurationSection("ores." + alias.trim());
+        ConfigurationSection section = this.config.getConfigurationSection("ores." + alias.trim());
         if (section == null) {
             this.warn("Missing ore section for " + alias);
             return null;
@@ -182,11 +168,11 @@ public class OresConfig {
      */
     public List<Ore> getOres() {
         List<Ore> ores = new ArrayList<>();
-        if (!this.plugin.getConfig().contains("ores")) {
+        if (!this.config.contains("ores")) {
             this.warn("Missing ores section");
             return ores;
         }
-        Set<String> aliases = this.plugin.getConfig().getConfigurationSection("ores").getKeys(false);
+        Set<String> aliases = this.config.getConfigurationSection("ores").getKeys(false);
         for (String alias : aliases) {
             Ore ore = this.getOre(alias);
             if (ore != null) {
@@ -311,7 +297,16 @@ public class OresConfig {
          */
         @Override
         public String toString() {
-            return ChatColor.RESET + getFormatting() + getName();
+            return ChatColor.RESET + getFormatting() + getName() + ChatColor.RESET;
         }
+    }
+
+    /**
+     * A utility method to avoid typing {@code this.plugin.getLogger()} everywhere.
+     * @see java.util.logging.Logger#warning(String)
+     * @see org.bukkit.plugin.java.JavaPlugin#getLogger()
+     */
+    private void warn(String message) {
+        this.plugin.getLogger().warning("CONFIG ERROR: " + message);
     }
 }
