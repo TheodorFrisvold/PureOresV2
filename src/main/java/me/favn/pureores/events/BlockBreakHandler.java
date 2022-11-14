@@ -30,7 +30,6 @@ public class BlockBreakHandler implements Listener {
         // Make sure the player can get drops from this block with their current tool
         // (Don't drop flawless diamonds when broken with a wood/stone pickaxe)
         boolean canDrop = e.getBlock().getDrops().isEmpty() || !e.getBlock().getDrops(tool).isEmpty();
-        tool.getType().getHardness();
         Ore ore = this.plugin.getOresConfig().getOre(block);
 
         if (!silkTouch && canDrop && ore != null) {
