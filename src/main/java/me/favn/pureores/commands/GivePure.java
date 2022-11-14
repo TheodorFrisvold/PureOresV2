@@ -111,7 +111,7 @@ public class GivePure implements TabExecutor {
         this.plugin.givePure(player, item, false);
         if (playerName != null) {
             sender.sendMessage(
-                    String.format("Gave %1$d %2$s to %3$s!", parsedAmount, foundOre.toString(), player.getName()));
+                    String.format("Gave %1$d %2$s to %3$s!", parsedAmount, foundOre.getDisplayName(), player.getName()));
         }
     }
 

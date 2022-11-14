@@ -217,6 +217,13 @@ public final class OresConfig {
         }
 
         /**
+         * Gets the display name of the dropped pure item, with any formatting.
+         */
+        public String getDisplayName() {
+            return ChatColor.RESET + this.getFormatting() + this.getName() + ChatColor.RESET;
+        }
+
+        /**
          * Gets the formatting and color codes to use with the pure item's name.
          */
         public String getFormatting() {
@@ -274,7 +281,7 @@ public final class OresConfig {
             }
             ItemStack item = new ItemStack(getItem(), amount);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(ChatColor.RESET + getFormatting() + getName());
+            meta.setDisplayName(this.getDisplayName());
             if (!getDescription().isEmpty()) {
                 meta.setLore(Arrays.asList(ChatColor.RESET + getDescription()));
             }
@@ -293,11 +300,11 @@ public final class OresConfig {
         }
 
         /**
-         * Gets the display name of the dropped pure item, with any formatting.
+         * @see Ore#getDisplayName()
          */
         @Override
         public String toString() {
-            return ChatColor.RESET + getFormatting() + getName() + ChatColor.RESET;
+            return this.getDisplayName();
         }
     }
 
