@@ -1,0 +1,96 @@
+ores:
+  # This key is what will be used in the /givepure command
+  diamond:
+    # What the item-name will be in-game. You cannot include color codes here.
+    name: "Flawless Diamond"
+    # What color/formatting should the item name have? ('&' will be replaced with '§')
+    # List of color codes: https://minecraft.fandom.com/wiki/Formatting_codes
+    formatting: "&b"
+    # The material for the item
+    # List of valid materials: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+    item: "DIAMOND"
+    # Blocks to drop the item from
+    # List of valid materials: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+    blocks:
+      - "DIAMOND_ORE"
+      - "DEEPSLATE_DIAMOND_ORE"
+    # The drop-chance as a decimal (0.5 for 50%, 0.005 for 0.5%, etc.)
+    chance: 0.5
+    # The text that will be displayed in the item-lore
+    description: "A rare form of Diamond!"
+  emerald:
+    name: "Flawless Emerald"
+    formatting: "§2"
+    item: "EMERALD"
+    blocks:
+      - "EMERALD_ORE"
+      - "DEEPSLATE_EMERALD_ORE"
+    chance: 0.5
+    description: "A rare form of Emerald!"
+  gold:
+    name: "Pure Gold"
+    formatting: "§e"
+    item: "GOLD_INGOT"
+    blocks:
+      - "GOLD_ORE"
+      - "DEEPSLATE_GOLD_ORE"
+    chance: 0.5
+    description: "A rare form of Gold!"
+  iron:
+    name: "Pure Iron"
+    formatting: "§f"
+    item: "IRON_INGOT"
+    blocks:
+      - "IRON_ORE"
+      - "DEEPSLATE_IRON_ORE"
+    chance: 0.5
+    description: "A rare form of Iron!"
+  redstone:
+    name: "Pure Redstone"
+    formatting: "§c"
+    item: "REDSTONE"
+    blocks:
+      - "REDSTONE_ORE"
+      - "DEEPSLATE_REDSTONE_ORE"
+    chance: 0.5
+    description: "A rare form of Redstone!"
+  copper:
+    name: "Pure Copper"
+    formatting: "§6"
+    item: "COPPER_INGOT"
+    blocks:
+      - "COPPER_ORE"
+      - "DEEPSLATE_COPPER_ORE"
+    chance: 0.5
+    description: "A rare form of copper!"
+  coal:
+    name: "Pure Coal"
+    formatting: "§8"
+    item: "COAL"
+    blocks:
+      - "COAL_ORE"
+      - "DEEPSLATE_COAL_ORE"
+    chance: 0.5
+    description: "A rare form of coal!"
+  lapis:
+    name: "Flawless Lapis"
+    formatting: "§9"
+    item: "LAPIS_LAZULI"
+    blocks:
+      - "LAPIS_ORE"
+      - "DEEPSLATE_LAPIS_ORE"
+    chance: 0.5
+    description: "A rare form of Lapis"
+  amethyst:
+    name: "Flawless Amethyst Shard"
+    formatting: "§d"
+    item: "AMETHYST_SHARD"
+    blocks: "AMETHYST_CLUSTER"
+    chance: 0.5
+    description: "A rare form of Amethyst"
+globals:
+  #This is the global setting for dropchance, if there is no Chance specified in the item it will use this value
+  chance:
+    value: 0.5
+    #Whether the global drop chance should be used instead of item drop chance
+    use: false
