@@ -220,7 +220,7 @@ public final class OresConfig {
          * Gets the display name of the dropped pure item, with any formatting.
          */
         public String getDisplayName() {
-            return ChatColor.RESET + this.getFormatting() + this.getName() + ChatColor.RESET;
+            return ChatColor.RESET + this.getFormatting() + this.getName();
         }
 
         /**
@@ -230,7 +230,7 @@ public final class OresConfig {
             if (formatting == null) {
                 return "";
             }
-            return formatting.trim().replaceAll("&", "§");
+            return ChatColor.translateAlternateColorCodes('&', formatting);
         }
 
         /**

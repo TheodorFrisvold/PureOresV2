@@ -2,6 +2,7 @@ package me.favn.pureores.config;
 
 import java.io.File;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -51,7 +52,7 @@ public final class TextConfig {
     public static final class Placeholders {
         private final String player;
         private final String item;
-        private final Integer count;
+        private final String count;
 
         /**
          * Options to use when replacing placeholders in text. All parameters may be
@@ -70,22 +71,22 @@ public final class TextConfig {
             } else if (player instanceof String) {
                 this.player = (String) player;
             } else {
-                this.player = null;
+                this.player = "";
             }
             if (item instanceof ItemStack) {
                 this.item = ((ItemStack) item).getItemMeta().getDisplayName();
             } else if (item instanceof String) {
                 this.item = (String) item;
             } else {
-                this.item = null;
+                this.item = "";
             }
-            this.count = count;
+            this.count = count == null ? "" : count.toString();
         }
 
         protected String format(String str) {
-            return str.replaceAll("{{player}}", this.player == null ? "" : this.player)
-                    .replaceAll("{{item}}", this.item == null ? "" : this.item)
-                    .replaceAll("{{count}}", this.count == null ? "" : this.count.toString());
+            return str.replaceAll("\\{\\{player\\}\\}", this.player)
+                    .replaceAll("\\{\\{item\\}\\}", this.item + ChatColor.RESET)
+                    .replaceAll("\\{\\{count\\}\\}", this.count);
         }
     }
 }

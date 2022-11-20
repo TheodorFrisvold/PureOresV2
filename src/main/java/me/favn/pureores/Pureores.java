@@ -46,7 +46,7 @@ public final class Pureores extends JavaPlugin {
 
     /**
      * A utility method for giving pure ore drops to players.
-     * 
+     *
      * @param player  The player to give the pure item to.
      * @param item    The item stack to give the player.
      * @param natural Whether the item was dropped from ore, instead of given with a
@@ -73,7 +73,7 @@ public final class Pureores extends JavaPlugin {
      * A utility method for giving pure ore drops to players.
      * This method assumes the pure item was dropped from ore, instead of given with
      * a command.
-     * 
+     *
      * @param player The player to give the pure item to.
      * @param item   The item stack to give the player.
      */
