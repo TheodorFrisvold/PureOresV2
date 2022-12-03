@@ -1,0 +1,29 @@
+# Config for text displayed to players by the Pureores plugin
+# The following placeholders may be used in the text values:
+# {{item}} - The name of a pure item
+# {{count}} - The number of items in a pure item stack
+# {{player}} - The name of a player
+
+# Message displayed to players when they mine a pure ore
+ore-found: 'Found a {{item}}!'
+# Message displayed to players given pure ores with /givepure
+ore-added: 'Added {{count}} {{item}} to your inventory!'
+# Message displayed to players given pure ores with /givepure
+# when their inventory is full
+ore-dropped: 'The {{item}} dropped at your feet because your inventory is full.'
+# Message displayed to players that use /givepure
+ore-gave: 'Gave {{count}} {{item}} to {{player}}!'
+# Displayed when using /givepure with an invalid item
+invalid-item: '{{item}} is not a valid pureores item.'
+# Displayed when using /givepure with an invalid amount
+invalid-amount: 'Amount must be a number larger than 0.'
+# Displayed when using /givepure with an invalid player name
+invalid-player: 'No player found with name {{player}}'
+
+# Displayed to console when they try to use /givepure without a player
+# (no placeholders)
+no-console-ores: 'Console cannot be given pure ores. Please specify a player.'
+
+# A generic error message
+# (no placeholders)
+error: 'Something went wrong! An error has been logged.'

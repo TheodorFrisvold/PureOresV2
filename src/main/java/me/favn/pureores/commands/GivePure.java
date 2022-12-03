@@ -2,6 +2,7 @@ package me.favn.pureores.commands;
 
 import me.favn.pureores.Pureores;
 import me.favn.pureores.config.OresConfig.Ore;
+import me.favn.pureores.config.TextConfig.Placeholders;
 
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class GivePure implements TabExecutor {
                 return false;
             } catch (Exception e) {
                 plugin.getLogger().log(Level.WARNING, "Error in /givepure command!", e);
-                sender.sendMessage("Something went wrong! An error has been logged.");
+                sender.sendMessage(this.plugin.getTextConfig().getMessage("error"));
             }
         }
         return true;
@@ -73,7 +74,7 @@ public class GivePure implements TabExecutor {
 
     private void givePure(CommandSender sender, String itemName) throws GivePureException {
         if (!(sender instanceof Player)) {
-            throw new GivePureException("Console cannot be given pure ores. Please specify a player.");
+            throw new GivePureException(this.plugin.getTextConfig().getMessage("no-console-ores"));
         }
         givePure(sender, itemName, "1", null);
     }
@@ -82,7 +83,7 @@ public class GivePure implements TabExecutor {
         try {
             Integer.parseInt(amountOrPlayerName);
             if (!(sender instanceof Player)) {
-                throw new GivePureException("Console cannot be given pure ores. Please specify a player.");
+                throw new GivePureException(this.plugin.getTextConfig().getMessage("no-console-ores"));
             }
             givePure(sender, itemName, amountOrPlayerName, null);
         } catch (NumberFormatException e) {
@@ -93,25 +94,27 @@ public class GivePure implements TabExecutor {
     private void givePure(CommandSender sender, String itemName, String amount, String playerName)
             throws GivePureException {
         if (sender instanceof ConsoleCommandSender && playerName == null) {
-            throw new GivePureException("Console cannot be given pure ores. Please specify a player.");
+            throw new GivePureException(this.plugin.getTextConfig().getMessage("no-console-ores"));
         }
         Ore foundOre = this.plugin.getOresConfig().getOre(itemName);
         if (foundOre == null) {
-            throw new GivePureException(String.format("%1$s is not a valid pureores item.", itemName));
+            throw new GivePureException(
+                    this.plugin.getTextConfig().getMessage("invalid-item", new Placeholders(null, itemName, null)));
         }
         int parsedAmount = parseAmount(amount);
         if (parsedAmount <= 0) {
-            throw new GivePureException("Amount must be a number larger than 0.");
+            throw new GivePureException(this.plugin.getTextConfig().getMessage("invalid-amount"));
         }
         Player player = playerName == null ? (Player) sender : plugin.getServer().getPlayerExact(playerName);
         if (player == null) {
-            throw new GivePureException(String.format("No player found with name %1$s.", playerName));
+            throw new GivePureException(
+                    this.plugin.getTextConfig().getMessage("invalid-player", new Placeholders(playerName, null, null)));
         }
         ItemStack item = foundOre.toItemStack(parsedAmount);
         this.plugin.givePure(player, item, false);
         if (playerName != null) {
             sender.sendMessage(
-                    String.format("Gave %1$d %2$s to %3$s!", parsedAmount, foundOre.getDisplayName(), player.getName()));
+                    this.plugin.getTextConfig().getMessage("ore-gave", new Placeholders(player, item, parsedAmount)));
         }
     }
 
