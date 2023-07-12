@@ -111,7 +111,7 @@ public class GivePure implements TabExecutor {
                     this.plugin.getTextConfig().getMessage("invalid-player", new Placeholders(playerName, null, null)));
         }
         ItemStack item = foundOre.toItemStack(parsedAmount);
-        this.plugin.givePure(player, item, false);
+        this.plugin.getApi().givePure(player, item, false);
         if (playerName != null) {
             sender.sendMessage(
                     this.plugin.getTextConfig().getMessage("ore-gave", new Placeholders(player, item, parsedAmount)));
