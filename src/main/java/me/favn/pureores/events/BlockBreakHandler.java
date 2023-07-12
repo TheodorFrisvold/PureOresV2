@@ -38,7 +38,7 @@ public class BlockBreakHandler implements Listener {
             if (random.nextDouble() <= chance) {
                 ItemStack item = ore.toItemStack();
                 e.setDropItems(false);
-                this.plugin.givePure(player, item, true);
+                this.plugin.getApi().givePure(player, item, true);
             }
         }
     }
