@@ -1,0 +1,31 @@
+pure_items:
+  diamond:
+    name: "Flawless Diamond"
+    description: "A rare form of Diamond!"
+    formatting: "&b"
+    item: "DIAMOND"
+block_drops:
+    # List of blocks to drop from
+  - drop_from:
+      - "DIAMOND_ORE"
+      - "DIAMOND_DEEPSLATE_ORE"
+    # Pure item to drop (a key under "pure_items" in this config file)
+    pure_item: "diamond"
+    # Drop chance (0.5 = 50%, 0.05 = 5%, etc.)
+    drop_chance: 0.5
+    # Number of items to drop
+    drop_amount: 1
+mob_drops:
+    # List of mobs to drop from
+  - drop_from:
+      - "WITHER"
+    pure_item: "diamond"
+    drop_chance: 0.5
+    drop_amount: 1
+chest_loot:
+    # List of structures to generate in
+  - drop_from:
+      - "ABANDONED_MINESHAFT"
+    pure_item: "diamond"
+    drop_chance: 0.5
+    drop_amount: 1
