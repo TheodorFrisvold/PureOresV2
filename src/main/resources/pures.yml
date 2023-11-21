@@ -8,7 +8,7 @@ block_drops:
     # List of blocks to drop from
   - drop_from:
       - "DIAMOND_ORE"
-      - "DIAMOND_DEEPSLATE_ORE"
+      - "DEEPSLATE_DIAMOND_ORE"
     # Pure item to drop (a key under "pure_items" in this config file)
     pure_item: "diamond"
     # Drop chance (0.5 = 50%, 0.05 = 5%, etc.)
