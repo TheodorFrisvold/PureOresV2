@@ -3,6 +3,7 @@ package me.favn.pureores.config;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,26 @@ public class PureConfig {
         loadBlockDrops();
         loadMobDrops();
         loadChestLoot();
+    }
+
+    public PureOre getPureItem(String key) {
+        return this.pureItems.get(key);
+    }
+
+    public PureOre getPureItem(Material base) {
+        return this.pureItems.values().stream().filter(pure -> pure.getItem() == base).findFirst().orElse(null);
+    }
+
+    public List<DropsConfig<Material>> getBlockDrops(Material block) {
+        return Collections.unmodifiableList(this.blockDropsMap.get(block));
+    }
+
+    public List<DropsConfig<EntityType>> getMobDrops(EntityType mob) {
+        return Collections.unmodifiableList(this.mobDropsMap.get(mob));
+    }
+
+    public List<DropsConfig<LootTables>> getChestLoot(LootTables structure) {
+        return Collections.unmodifiableList(this.chestLootMap.get(structure));
     }
 
     private void loadPureItems() {
@@ -409,10 +430,14 @@ class DropsConfig<T extends Enum<?>> {
         return false;
     }
 
-    public ItemStack roll() {
+    public boolean roll() {
         Random random = new Random();
         double rolled = random.nextDouble();
-        if (rolled < getDropChance()) {
+        return rolled < getDropChance();
+    }
+
+    public ItemStack rollForDrops() {
+        if (roll()) {
             return getPureItem().toItemStack(getDropAmount());
         }
         return null;

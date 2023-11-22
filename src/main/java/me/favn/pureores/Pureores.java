@@ -48,6 +48,10 @@ public final class Pureores extends JavaPlugin {
         return this.textConfig;
     }
 
+    public PureConfig getPureConfig() {
+        return this.pureConfig;
+    }
+
     public PureApi getApi() {
         return this.api;
     }
