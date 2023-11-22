@@ -2,12 +2,10 @@ package me.favn.pureores.config;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,15 +13,12 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.loot.LootTables;
 
+import me.favn.pureores.PureDrops;
+import me.favn.pureores.PureOre;
 import me.favn.pureores.Pureores;
-import net.md_5.bungee.api.ChatColor;
 
 // TODO: improve error messages
 public class PureConfig {
@@ -33,12 +28,12 @@ public class PureConfig {
     private FileConfiguration config;
 
     private Map<String, PureOre> pureItems;
-    private List<DropsConfig<Material>> blockDrops;
-    private Map<Material, List<DropsConfig<Material>>> blockDropsMap;
-    private List<DropsConfig<EntityType>> mobDrops;
-    private Map<EntityType, List<DropsConfig<EntityType>>> mobDropsMap;
-    private List<DropsConfig<LootTables>> chestLoot;
-    private Map<LootTables, List<DropsConfig<LootTables>>> chestLootMap;
+    private List<PureDrops<Material>> blockDrops;
+    private Map<Material, List<PureDrops<Material>>> blockDropsMap;
+    private List<PureDrops<EntityType>> mobDrops;
+    private Map<EntityType, List<PureDrops<EntityType>>> mobDropsMap;
+    private List<PureDrops<LootTables>> chestLoot;
+    private Map<LootTables, List<PureDrops<LootTables>>> chestLootMap;
 
     public PureConfig(Pureores plugin) {
         this.plugin = plugin;
@@ -85,16 +80,32 @@ public class PureConfig {
         return this.pureItems.values().stream().filter(pure -> pure.getItem() == base).findFirst().orElse(null);
     }
 
-    public List<DropsConfig<Material>> getBlockDrops(Material block) {
+    public Map<String, PureOre> getPureItems() {
+        return Collections.unmodifiableMap(this.pureItems);
+    }
+
+    public List<PureDrops<Material>> getBlockDrops(Material block) {
         return Collections.unmodifiableList(this.blockDropsMap.get(block));
     }
 
-    public List<DropsConfig<EntityType>> getMobDrops(EntityType mob) {
+    public List<PureDrops<Material>> getBlockDrops() {
+        return Collections.unmodifiableList(this.blockDrops);
+    }
+
+    public List<PureDrops<EntityType>> getMobDrops(EntityType mob) {
         return Collections.unmodifiableList(this.mobDropsMap.get(mob));
     }
 
-    public List<DropsConfig<LootTables>> getChestLoot(LootTables structure) {
+    public List<PureDrops<EntityType>> getMobDrops() {
+        return Collections.unmodifiableList(this.mobDrops);
+    }
+
+    public List<PureDrops<LootTables>> getChestLoot(LootTables structure) {
         return Collections.unmodifiableList(this.chestLootMap.get(structure));
+    }
+
+    public List<PureDrops<LootTables>> getChestLoot() {
+        return Collections.unmodifiableList(this.chestLoot);
     }
 
     private void loadPureItems() {
@@ -168,12 +179,12 @@ public class PureConfig {
                 continue;
             }
 
-            DropsConfig<Material> dropsConfig = new DropsConfig<>(pureItem, dropChance, dropAmount, dropFrom);
+            PureDrops<Material> dropsConfig = new PureDrops<>(pureItem, dropChance, dropAmount, dropFrom);
 
             blockDrops.add(dropsConfig);
 
             dropsConfig.getDropFrom().forEach(material -> {
-                List<DropsConfig<Material>> dropsForBlock = blockDropsMap.get(material);
+                List<PureDrops<Material>> dropsForBlock = blockDropsMap.get(material);
                 if (dropsForBlock == null) {
                     dropsForBlock = new ArrayList<>();
                     blockDropsMap.put(material, dropsForBlock);
@@ -234,12 +245,12 @@ public class PureConfig {
                 continue;
             }
 
-            DropsConfig<EntityType> dropsConfig = new DropsConfig<>(pureItem, dropChance, dropAmount, dropFrom);
+            PureDrops<EntityType> dropsConfig = new PureDrops<>(pureItem, dropChance, dropAmount, dropFrom);
 
             mobDrops.add(dropsConfig);
 
             dropsConfig.getDropFrom().forEach(mob -> {
-                List<DropsConfig<EntityType>> dropsForMob = mobDropsMap.get(mob);
+                List<PureDrops<EntityType>> dropsForMob = mobDropsMap.get(mob);
                 if (dropsForMob == null) {
                     dropsForMob = new ArrayList<>();
                     mobDropsMap.put(mob, dropsForMob);
@@ -300,12 +311,12 @@ public class PureConfig {
                 continue;
             }
 
-            DropsConfig<LootTables> dropsConfig = new DropsConfig<>(pureItem, dropChance, dropAmount, dropFrom);
+            PureDrops<LootTables> dropsConfig = new PureDrops<>(pureItem, dropChance, dropAmount, dropFrom);
 
             chestLoot.add(dropsConfig);
 
             dropsConfig.getDropFrom().forEach(loot -> {
-                List<DropsConfig<LootTables>> dropsForStructure = chestLootMap.get(loot);
+                List<PureDrops<LootTables>> dropsForStructure = chestLootMap.get(loot);
                 if (dropsForStructure == null) {
                     dropsForStructure = new ArrayList<>();
                     chestLootMap.put(loot, dropsForStructure);
@@ -317,129 +328,5 @@ public class PureConfig {
 
     private void warn(String message) {
         plugin.getLogger().warning("CONFIG ERROR: " + message);
-    }
-}
-
-class PureOre {
-    private String name;
-    private String description;
-    private String formatting;
-    private Material item;
-
-    public PureOre(String name, String description, String formatting, Material item) {
-        this.name = name;
-        this.description = description;
-        this.formatting = formatting;
-        this.item = item;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        if (description == null) {
-            return "";
-        }
-        return description;
-    }
-
-    public String getFormatting() {
-        if (formatting == null) {
-            return "";
-        }
-        return ChatColor.translateAlternateColorCodes('&', formatting);
-    }
-
-    public Material getItem() {
-        return item;
-    }
-
-    public String getDisplayName() {
-        return ChatColor.RESET + getFormatting() + getName();
-    }
-
-    public ItemStack toItemStack(int amount) {
-        if (amount <= 0) {
-            return null;
-        }
-
-        ItemStack item = new ItemStack(getItem(), amount);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(getDisplayName());
-        if (!getDescription().isEmpty()) {
-            meta.setLore(Arrays.asList(ChatColor.RESET + getDescription()));
-        }
-        meta.addEnchant(Enchantment.LUCK, 1, false);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        item.setItemMeta(meta);
-
-        return item;
-    }
-
-    public ItemStack toItemStack() {
-        return toItemStack(1);
-    }
-
-    @Override
-    public String toString() {
-        return getDisplayName();
-    }
-}
-
-class DropsConfig<T extends Enum<?>> {
-    private PureOre pureItem;
-    private double dropChance;
-    private int dropAmount;
-    private List<T> dropFrom;
-
-    public DropsConfig(PureOre pureItem, double dropChance, int dropAmount, List<T> dropFrom) {
-        this.pureItem = pureItem;
-        this.dropChance = Math.max(Math.min(dropChance, 1), 0);
-        this.dropAmount = Math.max(Math.min(dropAmount, pureItem.getItem().getMaxStackSize()), 0);
-        this.dropAmount = dropAmount;
-        this.dropFrom = new ArrayList<>(dropFrom);
-    }
-
-    public PureOre getPureItem() {
-        return pureItem;
-    }
-
-    public double getDropChance() {
-        return dropChance;
-    }
-
-    public int getDropAmount() {
-        return dropAmount;
-    }
-
-    public List<T> getDropFrom() {
-        return dropFrom;
-    }
-
-    public boolean dropsFrom(T thing) {
-        return dropFrom.contains(thing);
-    }
-
-    public boolean dropsFrom(String thing) {
-        for (T t : dropFrom) {
-            if (thing.equals(t.name())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean roll() {
-        Random random = new Random();
-        double rolled = random.nextDouble();
-        return rolled < getDropChance();
-    }
-
-    public ItemStack rollForDrops() {
-        if (roll()) {
-            return getPureItem().toItemStack(getDropAmount());
-        }
-        return null;
     }
 }

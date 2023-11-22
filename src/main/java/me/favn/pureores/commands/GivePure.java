@@ -1,7 +1,7 @@
 package me.favn.pureores.commands;
 
+import me.favn.pureores.PureOre;
 import me.favn.pureores.Pureores;
-import me.favn.pureores.config.OresConfig.Ore;
 import me.favn.pureores.config.TextConfig.Placeholders;
 
 import org.bukkit.command.*;
@@ -53,10 +53,10 @@ public class GivePure implements TabExecutor {
         if (args.length == 1) {
             // /givepure <ITEM>
             return this.plugin
-                    .getOresConfig()
-                    .getOres()
+                    .getPureConfig()
+                    .getPureItems()
+                    .keySet()
                     .stream()
-                    .map(o -> o.getAlias())
                     .collect(Collectors.toList());
         }
         if (args.length == 2 || args.length == 3) {
@@ -96,7 +96,7 @@ public class GivePure implements TabExecutor {
         if (sender instanceof ConsoleCommandSender && playerName == null) {
             throw new GivePureException(this.plugin.getTextConfig().getMessage("no-console-ores"));
         }
-        Ore foundOre = this.plugin.getOresConfig().getOre(itemName);
+        PureOre foundOre = this.plugin.getPureConfig().getPureItem(itemName);
         if (foundOre == null) {
             throw new GivePureException(
                     this.plugin.getTextConfig().getMessage("invalid-item", new Placeholders(null, itemName, null)));
