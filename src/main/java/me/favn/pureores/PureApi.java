@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.favn.pureores.config.OresConfig.Ore;
 import me.favn.pureores.config.TextConfig.Placeholders;
 
 public class PureApi {
