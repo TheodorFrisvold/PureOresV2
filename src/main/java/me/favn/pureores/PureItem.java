@@ -9,13 +9,13 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class PureOre {
+public class PureItem {
     private String name;
     private String description;
     private String formatting;
     private Material item;
 
-    public PureOre(String name, String description, String formatting, Material item) {
+    public PureItem(String name, String description, String formatting, Material item) {
         this.name = name;
         this.description = description;
         this.formatting = formatting;

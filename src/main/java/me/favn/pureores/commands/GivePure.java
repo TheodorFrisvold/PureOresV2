@@ -1,6 +1,6 @@
 package me.favn.pureores.commands;
 
-import me.favn.pureores.PureOre;
+import me.favn.pureores.PureItem;
 import me.favn.pureores.Pureores;
 import me.favn.pureores.config.TextConfig.Placeholders;
 
@@ -96,7 +96,7 @@ public class GivePure implements TabExecutor {
         if (sender instanceof ConsoleCommandSender && playerName == null) {
             throw new GivePureException(this.plugin.getTextConfig().getMessage("no-console-ores"));
         }
-        PureOre foundOre = this.plugin.getPureConfig().getPureItem(itemName);
+        PureItem foundOre = this.plugin.getPureConfig().getPureItem(itemName);
         if (foundOre == null) {
             throw new GivePureException(
                     this.plugin.getTextConfig().getMessage("invalid-item", new Placeholders(null, itemName, null)));

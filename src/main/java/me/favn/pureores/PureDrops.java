@@ -7,12 +7,12 @@ import java.util.Random;
 import org.bukkit.inventory.ItemStack;
 
 public class PureDrops<T extends Enum<?>> {
-    private PureOre pureItem;
+    private PureItem pureItem;
     private double dropChance;
     private int dropAmount;
     private List<T> dropFrom;
 
-    public PureDrops(PureOre pureItem, double dropChance, int dropAmount, List<T> dropFrom) {
+    public PureDrops(PureItem pureItem, double dropChance, int dropAmount, List<T> dropFrom) {
         this.pureItem = pureItem;
         this.dropChance = Math.max(Math.min(dropChance, 1), 0);
         this.dropAmount = Math.max(Math.min(dropAmount, pureItem.getItem().getMaxStackSize()), 0);
@@ -20,7 +20,7 @@ public class PureDrops<T extends Enum<?>> {
         this.dropFrom = new ArrayList<>(dropFrom);
     }
 
-    public PureOre getPureItem() {
+    public PureItem getPureItem() {
         return pureItem;
     }
 
@@ -62,4 +62,3 @@ public class PureDrops<T extends Enum<?>> {
         return null;
     }
 }
-

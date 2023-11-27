@@ -32,7 +32,8 @@ public class PureApi {
         if (player.getInventory().firstEmpty() == -1) {
             player.getWorld().dropItem(player.getLocation(), item);
             player.sendMessage(message);
-            player.sendMessage(this.plugin.getTextConfig().getMessage("ore-dropped", new Placeholders(null, item, null)));
+            player.sendMessage(
+                    this.plugin.getTextConfig().getMessage("ore-dropped", new Placeholders(null, item, null)));
         } else {
             player.getInventory().addItem(item);
             player.sendMessage(message);
@@ -53,17 +54,14 @@ public class PureApi {
 
     /**
      * A method for getting the pure version of a base material, if it exists.
-     * If there is no pure version of the given material, this method returns {@code null}.
+     * If there is no pure version of the given material, this method returns
+     * {@code null}.
      *
-     * @param material The base material to get the pure version of.
-     * @return An {@link Ore} that drops the pure version of the given material, or {@code null}.
+     * @param baseMaterial The base material to get the pure version of.
+     * @return A {@link PureItem} that is the pure version of the given material, or
+     *         {@code null}.
      */
-    public Ore getPure(Material material) {
-        for (Ore ore : this.plugin.getOresConfig().getOres()) {
-            if (ore.getItem() == material) {
-                return ore;
-            }
-        }
-        return null;
+    public PureItem getPure(Material baseMaterial) {
+        return this.plugin.getPureConfig().getPureItem(baseMaterial);
     }
 }

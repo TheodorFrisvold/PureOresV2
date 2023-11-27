@@ -36,27 +36,27 @@ A utility method for giving pure ore drops to players. This method assumes the p
    * `player` — The player to give the pure item to.
    * `item` — The item stack to give the player.
 
-#### `public Ore getPure(Material material)`
+#### `public PureItem getPure(Material material)`
 
 A method for getting the pure version of a base material, if it exists. If there is no pure version of the given material, this method returns `null`.
 
 * **Parameters:**
     * `material` — The base material to get the pure version of.
-* **Returns:** An `Ore` that drops the pure version of the given material, or `null`.
+* **Returns:** A `PureItem` that is the pure version of the given material, or `null`.
 
 ### Example Usage
 
 ```java
 import me.favn.pureores.Pureores;
 import me.favn.pureores.PureApi;
-import me.favn.pureores.config.OresConfig.Ore;
+import me.favn.pureores.PureItem;
 
 // ...
 
 // Get the PureApi instance
 PureApi pureores = JavaPlugin.getPlugin(Pureores.class).getApi();
 // Get the pure version of diamond
-Ore diamond = pureores.getPure(Material.DIAMOND);
+PureItem diamond = pureores.getPure(Material.DIAMOND);
 // Give a pure diamond to a player
 if (diamond != null) {
     Player player = Bukkit.getPlayerExact("727021");

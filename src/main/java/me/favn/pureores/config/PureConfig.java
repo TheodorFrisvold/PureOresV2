@@ -17,7 +17,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.loot.LootTables;
 
 import me.favn.pureores.PureDrops;
-import me.favn.pureores.PureOre;
+import me.favn.pureores.PureItem;
 import me.favn.pureores.Pureores;
 
 // TODO: improve error messages
@@ -27,7 +27,7 @@ public class PureConfig {
     private final Pureores plugin;
     private FileConfiguration config;
 
-    private Map<String, PureOre> pureItems;
+    private Map<String, PureItem> pureItems;
     private List<PureDrops<Material>> blockDrops;
     private Map<Material, List<PureDrops<Material>>> blockDropsMap;
     private List<PureDrops<EntityType>> mobDrops;
@@ -72,15 +72,15 @@ public class PureConfig {
         loadChestLoot();
     }
 
-    public PureOre getPureItem(String key) {
+    public PureItem getPureItem(String key) {
         return this.pureItems.get(key);
     }
 
-    public PureOre getPureItem(Material base) {
+    public PureItem getPureItem(Material base) {
         return this.pureItems.values().stream().filter(pure -> pure.getItem() == base).findFirst().orElse(null);
     }
 
-    public Map<String, PureOre> getPureItems() {
+    public Map<String, PureItem> getPureItems() {
         return Collections.unmodifiableMap(this.pureItems);
     }
 
@@ -133,7 +133,7 @@ public class PureConfig {
                 continue;
             }
 
-            PureOre pure = new PureOre(name, description, formatting, item);
+            PureItem pure = new PureItem(name, description, formatting, item);
             pureItems.put(key, pure);
         }
     }
@@ -146,7 +146,7 @@ public class PureConfig {
 
         for (Map<?, ?> drop : config.getMapList("block_drops")) {
             String pureItemKey = (String) drop.get("pure_item");
-            PureOre pureItem = pureItems.getOrDefault(pureItemKey, null);
+            PureItem pureItem = pureItems.getOrDefault(pureItemKey, null);
             if (pureItem == null) {
                 warn("Missing/invalid pure item for block drop");
                 continue;
@@ -166,15 +166,16 @@ public class PureConfig {
                 warn("Missing blocks for block drop");
                 continue;
             }
-            List<Material> dropFrom = dropFromMaterials.stream().map(name -> Material.getMaterial(name)).collect(Collectors.toList());
+            List<Material> dropFrom = dropFromMaterials.stream().map(name -> Material.getMaterial(name))
+                    .collect(Collectors.toList());
             if (!dropFrom.stream().allMatch(material -> material != null && material.isBlock())) {
                 String invalid = dropFromMaterials
-                    .stream()
-                    .filter(name -> {
-                        Material m = Material.getMaterial(name);
-                        return m == null || !m.isBlock();
-                    })
-                    .collect(Collectors.joining(","));
+                        .stream()
+                        .filter(name -> {
+                            Material m = Material.getMaterial(name);
+                            return m == null || !m.isBlock();
+                        })
+                        .collect(Collectors.joining(","));
                 warn("Invalid block material(s) for block drop: " + invalid);
                 continue;
             }
@@ -202,7 +203,7 @@ public class PureConfig {
 
         for (Map<?, ?> drop : config.getMapList("mob_drops")) {
             String pureItemKey = (String) drop.get("pure_item");
-            PureOre pureItem = pureItems.getOrDefault(pureItemKey, null);
+            PureItem pureItem = pureItems.getOrDefault(pureItemKey, null);
             if (pureItem == null) {
                 warn("Missing/invalid pure item for mob drop");
                 continue;
@@ -231,16 +232,16 @@ public class PureConfig {
             }).collect(Collectors.toList());
             if (!dropFrom.stream().allMatch(mob -> mob != null && mob.isAlive())) {
                 String invalid = dropFromMobs
-                    .stream()
-                    .filter(name -> {
-                        try {
-                            EntityType m = Enum.valueOf(EntityType.class, name);
-                            return !m.isAlive();
-                        } catch (Exception e) {
-                            return true;
-                        }
-                    })
-                    .collect(Collectors.joining(","));
+                        .stream()
+                        .filter(name -> {
+                            try {
+                                EntityType m = Enum.valueOf(EntityType.class, name);
+                                return !m.isAlive();
+                            } catch (Exception e) {
+                                return true;
+                            }
+                        })
+                        .collect(Collectors.joining(","));
                 warn("Invalid entity type(s) for mob drop: " + invalid);
                 continue;
             }
@@ -268,7 +269,7 @@ public class PureConfig {
 
         for (Map<?, ?> drop : config.getMapList("chest_loot")) {
             String pureItemKey = (String) drop.get("pure_item");
-            PureOre pureItem = pureItems.getOrDefault(pureItemKey, null);
+            PureItem pureItem = pureItems.getOrDefault(pureItemKey, null);
             if (pureItem == null) {
                 warn("Missing/invalid pure item for chest loot");
                 continue;
@@ -297,16 +298,16 @@ public class PureConfig {
             }).collect(Collectors.toList());
             if (!dropFrom.stream().allMatch(loot -> loot != null && loot.getKey().getKey().startsWith("chest/"))) {
                 String invalid = dropInStructures
-                    .stream()
-                    .filter(name -> {
-                        try {
-                            LootTables l = Enum.valueOf(LootTables.class, name);
-                            return !l.getKey().getKey().startsWith("chest/");
-                        } catch (Exception e) {
-                            return false;
-                        }
-                    })
-                    .collect(Collectors.joining(","));
+                        .stream()
+                        .filter(name -> {
+                            try {
+                                LootTables l = Enum.valueOf(LootTables.class, name);
+                                return !l.getKey().getKey().startsWith("chest/");
+                            } catch (Exception e) {
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.joining(","));
                 warn("Invalid structure type(s) for chest loot: " + invalid);
                 continue;
             }
